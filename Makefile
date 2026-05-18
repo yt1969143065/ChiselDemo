@@ -1,4 +1,4 @@
 run:
-	./mill ChiselDemo.runMain gcd.GCD
+	./mill Demo.runMain gcd.GCD
 clean:
 	rm -rf out

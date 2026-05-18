@@ -1,8 +1,11 @@
-//| mill-version: 1.1.2
-package build
-
+// import Mill dependency
 import mill._
-import mill.scalalib._
+import mill.define.Sources
+import mill.modules.Util
+import mill.scalalib.TestModule.ScalaTest
+import scalalib._
+// support BSP
+import mill.bsp._
 
 // Note: This project requires .mill-jvm-opts file containing:
 //   -Dchisel.project.root=${PWD}
@@ -10,12 +13,10 @@ import mill.scalalib._
 // to properly generate and handle test directories and output files.
 // See: https://github.com/com-lihaoyi/mill/issues/3840
 
-object `ChiselDemo` extends SbtModule {
-  def scalaVersion = "2.13.18"
+object Demo extends SbtModule { m =>
+  override def millSourcePath = super.millSourcePath / os.up
+  override def scalaVersion = "2.13.18"
   def chiselVersion = "7.7.0"
-
-  def moduleDir = super.moduleDir / os.up
-
   override def scalacOptions = Seq(
     "-language:reflectiveCalls",
     "-deprecation",
@@ -23,15 +24,15 @@ object `ChiselDemo` extends SbtModule {
     "-Xcheckinit",
     "-Ymacro-annotations",
   )
-  override def mvnDeps = Seq(
-    mvn"org.chipsalliance::chisel:$chiselVersion",
+  override def ivyDeps = Agg(
+    ivy"org.chipsalliance::chisel:$chiselVersion",
   )
-  override def scalacPluginMvnDeps = Seq(
-    mvn"org.chipsalliance:::chisel-plugin:$chiselVersion",
+  override def scalacPluginIvyDeps = Agg(
+    ivy"org.chipsalliance:::chisel-plugin:$chiselVersion",
   )
   object test extends SbtTests with TestModule.ScalaTest {
-    override def mvnDeps = Seq(
-      mvn"org.scalatest::scalatest::3.2.19"
+    override def ivyDeps = m.ivyDeps() ++ Agg(
+      ivy"org.scalatest::scalatest::3.2.19"
     )
   }
 }
