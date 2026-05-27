@@ -73,10 +73,24 @@ class Check1PriorityEncoder extends Module {
   io.out := PriorityEncoder(io.in)
 }
 
+object ParallelPriorityEncoderOH {
+  def apply(in: Seq[Bool]): UInt = ParallelPriorityMux(in, (0 until in.size).map(i => UIntToOH(i.asUInt)))
+  def apply(in: Bits): UInt = apply(in.asBools)
+}
+object PriorityEncoderOH {
+  def apply(in: Bits): UInt = ParallelPriorityEncoderOH(in)
+}
+class Check1PriorityEncoderOH extends Module {
+  val io = IO(new Bundle {
+    val in = Input(UInt(8.W))
+    val out = Output(UInt(8.W))
+  })
+  io.out := PriorityEncoderOH(io.in)
+}
 
 object Main extends App {
   ChiselStage.emitSystemVerilogFile(
-    new Check1PriorityEncoder,
+    new Check1PriorityEncoderOH,
     firtoolOpts = Array(
       "-disable-all-randomization", 
       "-strip-debug-info", 
